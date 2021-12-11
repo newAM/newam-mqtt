@@ -1,0 +1,85 @@
+on:
+  push:
+    branches:
+      - main
+    tags:
+      - 'v*'
+  pull_request:
+  schedule:
+    - cron: "14 3 * * 4"
+
+name: CI
+
+jobs:
+  build:
+    name: Build
+    runs-on: ubuntu-latest
+    env: {"RUSTFLAGS": "-D warnings"}
+    strategy:
+      matrix:
+        target:
+          - "x86_64-unknown-linux-gnu"
+          - "thumbv7em-none-eabi"
+    steps:
+      - uses: actions/checkout@v2
+      - uses: actions-rs/toolchain@v1
+        with:
+          toolchain: stable
+          target: ${{ matrix.target }}
+      - run: cargo build --target ${{ matrix.target }}
+
+  test:
+    name: Test
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v2
+      - uses: actions-rs/toolchain@v1
+        with:
+          toolchain: stable
+      - run: cargo test --all-features
+
+  clippy:
+    name: Clippy
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v2
+      - uses: actions-rs/toolchain@v1
+        with:
+          toolchain: stable
+          components: clippy
+      # not using clippy-check due to this issue:
+      # https://github.com/actions-rs/clippy-check/issues/2
+      - run: cargo clippy --all-features -- --deny warnings
+
+  format:
+    name: Rust Format
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v2
+      - uses: actions-rs/toolchain@v1
+        with:
+          toolchain: nightly
+          components: rustfmt
+      - run: cargo +nightly fmt -- --check
+
+  rustdoc:
+    name: rustdoc
+    runs-on: ubuntu-latest
+    env: {"RUSTDOCFLAGS": "-D warnings --cfg docsrs"}
+    steps:
+      - uses: actions/checkout@v2
+      - uses: actions-rs/toolchain@v1
+        with:
+          toolchain: nightly
+      - name: rustdoc
+        run: |
+          cargo +nightly rustdoc \
+          --all-features \
+          -- -Z unstable-options --enable-index-page
+      - name: deploy
+        if: ${{ github.ref == 'refs/heads/main' }}
+        uses: peaceiris/actions-gh-pages@v3
+        with:
+          github_token: ${{ secrets.GITHUB_TOKEN }}
+          publish_dir: ./target/doc
+          force_orphan: true

@@ -87,7 +87,7 @@ impl ConnackResult {
 
         let code: ConnectCode =
             ConnectCode::try_from(*bytes.next().ok_or(ConnectError::Underflow)?)
-                .map_err(|byte| ConnectError::InvalidCode(byte))?;
+                .map_err(ConnectError::InvalidCode)?;
 
         Ok(Self {
             session_present,
