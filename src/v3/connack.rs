@@ -21,6 +21,7 @@ pub enum ConnectCode {
 }
 
 impl From<ConnectCode> for u8 {
+    #[inline]
     fn from(val: ConnectCode) -> Self {
         val as u8
     }

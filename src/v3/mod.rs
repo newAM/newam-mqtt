@@ -6,10 +6,12 @@
 
 mod connack;
 mod connect;
+mod publish;
 mod suback;
 
 pub use connack::{ConnackResult, ConnectCode, ConnectError, CONNACK_LEN};
 pub use connect::Connect;
+pub use publish::PublishDe;
 pub use suback::{SubCode, SubError, SubackResult};
 
 /// Control packet types.
@@ -36,6 +38,7 @@ pub enum CtrlPkt {
 }
 
 impl From<CtrlPkt> for u8 {
+    #[inline]
     fn from(ctrl_pkt: CtrlPkt) -> Self {
         ctrl_pkt as u8
     }
@@ -62,5 +65,39 @@ impl TryFrom<u8> for CtrlPkt {
             x if x == CtrlPkt::DISCONNECT as u8 => Ok(CtrlPkt::DISCONNECT),
             x => Err(x),
         }
+    }
+}
+
+/// Quality of service.
+///
+/// [Table 3.2 - QoS definitions](http://docs.oasis-open.org/mqtt/mqtt/v3.1.1/os/mqtt-v3.1.1-os.html#_Table_3.11_-)
+#[repr(u8)]
+#[derive(Debug, PartialEq, Eq, Clone, Copy)]
+pub enum QoS {
+    /// QoS 0
+    AtMostOnce = 0b00,
+    /// QoS 1
+    AtLeastOnce = 0b01,
+    /// QoS 2
+    ExactlyOnce = 0b10,
+}
+
+impl TryFrom<u8> for QoS {
+    type Error = u8;
+
+    fn try_from(val: u8) -> Result<Self, Self::Error> {
+        match val {
+            x if x == QoS::AtMostOnce as u8 => Ok(QoS::AtMostOnce),
+            x if x == QoS::AtLeastOnce as u8 => Ok(QoS::AtLeastOnce),
+            x if x == QoS::ExactlyOnce as u8 => Ok(QoS::ExactlyOnce),
+            x => Err(x),
+        }
+    }
+}
+
+impl From<QoS> for u8 {
+    #[inline]
+    fn from(qos: QoS) -> Self {
+        qos as u8
     }
 }
