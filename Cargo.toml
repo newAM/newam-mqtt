@@ -1,0 +1,11 @@
+[package]
+name = "newam-mqtt"
+version = "0.1.0"
+edition = "2021"
+license = "MIT"
+repository = "https://github.com/newAM/newam-mqtt"
+description = "Another incomplete MQTT crate"
+readme = "README.md"
+keywords = ["hdmi", "cec", "driver", "embedded-hal-driver"]
+categories = ["embedded", "hardware-support", "no-std"]
+homepage = "https://github.com/newAM/newam-mqtt"
