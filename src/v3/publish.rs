@@ -5,6 +5,95 @@ use core::{
 };
 
 #[derive(Debug)]
+pub struct PublishBuilder<const N: usize> {
+    buf: [u8; N],
+}
+
+impl<const N: usize> PublishBuilder<N> {
+    const _PUBLISH_LEN_ASSERT: () = if N < 4 {
+        ::core::panic!("Publish packet length is too short")
+    };
+
+    pub const fn new() -> Self {
+        let mut p = Self { buf: [0; N] };
+        p.buf[0] = (super::CtrlPkt::PUBLISH as u8) << 4;
+        p.buf[1] = 2;
+        p
+    }
+
+    pub const fn set_dup(mut self, dup: bool) -> Self {
+        if dup {
+            self.buf[0] |= 0b1000;
+        } else {
+            self.buf[0] &= !0b1000;
+        }
+        self
+    }
+
+    pub const fn set_qos(mut self, qos: QoS) -> Self {
+        self.buf[0] &= !0b110;
+        self.buf[0] |= (qos as u8) << 1;
+        self
+    }
+
+    pub const fn set_retain(mut self, retain: bool) -> Self {
+        if retain {
+            self.buf[0] |= 0b1;
+        } else {
+            self.buf[0] &= !0b1;
+        }
+        self
+    }
+
+    const fn len(&self) -> usize {
+        (self.buf[1] + 2) as usize
+    }
+
+    pub const fn set_topic(mut self, topic: &str) -> Self {
+        let topic_len: u8 = topic.len() as u8;
+        self.buf[1] += topic_len;
+        self.buf[2] = 0;
+        self.buf[3] = topic_len;
+        let topic_bytes: &[u8] = topic.as_bytes();
+        let len: usize = topic_bytes.len();
+        let mut idx: usize = 0;
+        loop {
+            self.buf[idx + 4] = topic_bytes[idx];
+            idx += 1;
+            if idx >= len {
+                break;
+            }
+        }
+        self
+    }
+
+    pub const fn finalize(self) -> Publish<N> {
+        Publish { bldr: self }
+    }
+}
+
+#[derive(Debug)]
+pub struct Publish<const N: usize> {
+    bldr: PublishBuilder<N>,
+}
+
+impl<const N: usize> Publish<N> {
+    pub fn as_slice(&self) -> &[u8] {
+        &self.bldr.buf[..self.bldr.len()]
+    }
+}
+
+impl<const N: usize> core::fmt::Write for Publish<N> {
+    fn write_str(&mut self, s: &str) -> core::fmt::Result {
+        s.bytes().for_each(|byte| {
+            self.bldr.buf[self.bldr.len()] = byte;
+            self.bldr.buf[1] += 1;
+        });
+        Ok(())
+    }
+}
+
+#[derive(Debug)]
 pub struct PublishDe<'a> {
     pub dup_flag: bool,
     pub qos_level: Option<QoS>,
