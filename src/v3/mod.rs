@@ -11,7 +11,7 @@ mod suback;
 
 pub use connack::{ConnackResult, ConnectCode, ConnectError, CONNACK_LEN};
 pub use connect::Connect;
-pub use publish::PublishDe;
+pub use publish::{Publish, PublishBuilder, PublishDe};
 pub use suback::{SubCode, SubError, SubackResult};
 
 /// Control packet types.
