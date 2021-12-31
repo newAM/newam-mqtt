@@ -9,3 +9,6 @@ readme = "README.md"
 keywords = ["hdmi", "cec", "driver", "embedded-hal-driver"]
 categories = ["embedded", "hardware-support", "no-std"]
 homepage = "https://github.com/newAM/newam-mqtt"
+
+[features]
+std = []

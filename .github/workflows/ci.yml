@@ -27,6 +27,8 @@ jobs:
           toolchain: stable
           target: ${{ matrix.target }}
       - run: cargo build --target ${{ matrix.target }}
+      - run: cargo build --target ${{ matrix.target }} --features std
+        if: ${{ contains(matrix.target, 'linux') }}
 
   test:
     name: Test

@@ -66,6 +66,20 @@ pub enum ConnectError {
     InvalidCode(u8),
 }
 
+impl core::fmt::Display for ConnectError {
+    fn fmt(&self, f: &mut std::fmt::Formatter<'_>) -> std::fmt::Result {
+        match self {
+            ConnectError::Underflow => write!(f, "packet length is too short"),
+            ConnectError::InvalidCtrlPkt(x) => write!(f, "packet type is not CONNACK: {:#02X}", x),
+            ConnectError::InvalidLen(x) => write!(f, "remaining length is invalid: {:#02X}", x),
+            ConnectError::InvalidCode(x) => write!(f, "CONNACK code is invalid: {:#02X}", x),
+        }
+    }
+}
+
+#[cfg(feature = "std")]
+impl std::error::Error for ConnectError {}
+
 pub struct ConnackResult {
     session_present: bool,
     code: ConnectCode,
