@@ -67,7 +67,7 @@ pub enum ConnectError {
 }
 
 impl core::fmt::Display for ConnectError {
-    fn fmt(&self, f: &mut std::fmt::Formatter<'_>) -> std::fmt::Result {
+    fn fmt(&self, f: &mut core::fmt::Formatter<'_>) -> core::fmt::Result {
         match self {
             ConnectError::Underflow => write!(f, "packet length is too short"),
             ConnectError::InvalidCtrlPkt(x) => write!(f, "packet type is not CONNACK: {:#02X}", x),
