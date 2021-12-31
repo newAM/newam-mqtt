@@ -27,6 +27,8 @@ jobs:
           toolchain: stable
           target: ${{ matrix.target }}
       - run: cargo build --target ${{ matrix.target }}
+      - run: cargo build --target ${{ matrix.target }} --features std
+        if: ${{ contains(matrix.target, 'linux') }}
 
   test:
     name: Test
@@ -52,7 +54,7 @@ jobs:
       - run: cargo clippy --all-features -- --deny warnings
 
   format:
-    name: Rust Format
+    name: Format
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v2
