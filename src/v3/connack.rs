@@ -20,6 +20,15 @@ pub enum ConnectCode {
     NotAuth = 5,
 }
 
+impl ConnectCode {
+    /// Returns `true` if the connect code is [`Accept`].
+    ///
+    /// [`Accept`]: ConnectCode::Accept
+    pub const fn is_accept(&self) -> bool {
+        matches!(self, Self::Accept)
+    }
+}
+
 impl From<ConnectCode> for u8 {
     #[inline]
     fn from(val: ConnectCode) -> Self {
