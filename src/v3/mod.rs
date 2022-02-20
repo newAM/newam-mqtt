@@ -14,6 +14,9 @@ pub use connect::Connect;
 pub use publish::{Publish, PublishBuilder, PublishDe};
 pub use suback::{SubCode, SubError, SubackResult};
 
+#[cfg(feature = "std")]
+pub use connect::ConnectAlloc;
+
 /// Control packet types.
 ///
 /// See [Table 2.1 - Control packet types](http://docs.oasis-open.org/mqtt/mqtt/v3.1.1/os/mqtt-v3.1.1-os.html#_Table_2.1_-)

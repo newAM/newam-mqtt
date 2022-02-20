@@ -40,3 +40,32 @@ impl Connect {
         self.buf
     }
 }
+
+#[cfg(feature = "std")]
+pub struct ConnectAlloc {
+    buf: Vec<u8>,
+}
+
+#[cfg(feature = "std")]
+impl ConnectAlloc {
+    /// # Panics
+    ///
+    /// * If client_id is too long.
+    pub fn with_client_id(client_id: &str) -> Self {
+        let mut buf: Vec<u8> = Vec::with_capacity(Connect::LEN + client_id.len());
+
+        buf.extend_from_slice(&Connect::DEFAULT.into_array());
+        // remove the zero-length client ID
+        buf.pop();
+        buf.pop();
+
+        buf.extend_from_slice(&u16::try_from(client_id.len()).unwrap().to_be_bytes());
+        buf.extend_from_slice(client_id.as_bytes());
+
+        Self { buf }
+    }
+
+    pub fn as_bytes(&self) -> &[u8] {
+        &self.buf
+    }
+}
