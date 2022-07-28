@@ -1,0 +1,3 @@
+(function() {var implementors = {};
+implementors["newam_mqtt"] = [{"text":"impl <a class=\"trait\" href=\"https://doc.rust-lang.org/nightly/std/error/trait.Error.html\" title=\"trait std::error::Error\">Error</a> for <a class=\"enum\" href=\"newam_mqtt/v3/enum.ConnectError.html\" title=\"enum newam_mqtt::v3::ConnectError\">ConnectError</a>","synthetic":false,"types":["newam_mqtt::v3::connack::ConnectError"]}];
+if (window.register_implementors) {window.register_implementors(implementors);} else {window.pending_implementors = implementors;}})()
