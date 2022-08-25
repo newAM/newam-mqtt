@@ -104,7 +104,7 @@ pub struct PublishDe<'a> {
 
 impl<'a> PublishDe<'a> {
     pub fn new(buf: &'a [u8]) -> Option<Self> {
-        let first_byte: u8 = *buf.get(0)?;
+        let first_byte: u8 = *buf.first()?;
         if first_byte >> 4 & 0x0F == u8::from(super::CtrlPkt::PUBLISH) {
             let remain_len: u8 = *buf.get(1)?;
             let topic_len: u16 = u16::from_be_bytes(buf.get(2..4)?.try_into().unwrap());
