@@ -72,6 +72,12 @@ impl<const N: usize> PublishBuilder<N> {
     }
 }
 
+impl<const N: usize> Default for PublishBuilder<N> {
+    fn default() -> Self {
+        Self::new()
+    }
+}
+
 #[derive(Debug)]
 pub struct Publish<const N: usize> {
     bldr: PublishBuilder<N>,
